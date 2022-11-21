@@ -43,9 +43,10 @@ $date = date("Y-m-d");
 if(array_key_exists('registruotis', $_POST)) {
 	
 	$paslaugos = $_POST['radio'];
-	$data = $_POST['data'];
+	/*$data = $_POST['data'];
 	$time = $_POST['Laikas'];
-	$combinedDT = date('Y-m-d H:i:s', strtotime("$data $time"));	
+	$combinedDT = date('Y-m-d H:i:s', strtotime("$data $time"));*/
+	$combinedDT = $_POST['vieta'];
 	
 	$result =  "SELECT paslauga,kaina FROM $lentele WHERE id = '$paslaugos'";
 	$temp = mysqli_query($conn, $result);
@@ -104,6 +105,11 @@ if(array_key_exists('registruotis', $_POST)) {
 <title><?php echo $meistras ?> puslapis</title>
 </head>
 <body>
+	<div class="text-wrapper">
+                    <div class="main-heading">
+                        <h2 class="title mbr-section-title mbr-fonts-style display-5"><strong>Meistras: <?php echo $meistras ?></strong></h2>
+                    </div>
+                </div>
 	<section class="features3 cid-ssKysQzxEQ" id="features3-g">
 			<div class="container">
 				<div class="row justify-content-center">            
@@ -116,10 +122,15 @@ if(array_key_exists('registruotis', $_POST)) {
 				<div align="left">
 			<a href="skaitau.php">Grįžti sąrašą</a>
 				</div>
+				<form method='post' class="mbr-form form-with-styler" data-form-title="Form Name">
+			<?php echo "<div align=\"left\"><input min = ".$date." type=\"date\" id=\"diena\" name=\"diena\" required></div><br>";?>
+	<input name="laikai" type="submit" class="btn btn-primary display-4" id="laikai" value="Rodyti dieną">
+		
+		</form>
 	<form method='post'  class="mbr-form form-with-styler" data-form-title="Form Name">
-		<div align="left">
+		<!--<div align="left">
 	<?php
-	echo "<input min = ".$date." type=\"date\" id=\"data\" name=\"data\" required>";
+	//echo "<input min = ".$date." type=\"date\" id=\"data\" name=\"data\" required>";
 		?>
 		<select name="Laikas">
 			<option value="09:00">09.00-11:00</option>
@@ -127,7 +138,7 @@ if(array_key_exists('registruotis', $_POST)) {
 			<option value="13:00">13:00-15:00</option>
 			<option value="15:00">15:00-17:00</option>
 		</select>
-</div><br>
+</div>--><br>
 		<?php	
 		
 		$sql =  "SELECT * FROM $lentele4 WHERE meistro_id = '$meistro_id'";
@@ -153,6 +164,67 @@ if(array_key_exists('registruotis', $_POST)) {
 	}
 	echo "</table>";	
 ?>
+			<?php 		
+		if(array_key_exists('laikai', $_POST)) 
+		{
+			$current = $_POST['diena'];
+		}
+		else
+		{
+			$current = $date;
+		}
+		//$combinedDT = date('Y-m-d H:i:s', strtotime("$current $time"));
+	echo "<div class=\"mbr-section-head\">";
+    echo "<br><h4 class=\"mbr-section-title mbr-fonts-style align-center mb-0 display-2\"><strong>$current Dienos laisvi laikai</strong></h4></div><br>";
+
+	//echo "<div align=\"left\"><input min = ".$date." type=\"date\" id=\"diena\" name=\"diena\" required></div><br>";
+		$sql =  "SELECT * FROM $lentele2 WHERE meistro_id = '$meistro_id' AND 
+									darbolaikas BETWEEN '$current' AND '$current 23:59:59' ORDER BY darbolaikas";
+	
+		$result = mysqli_query($conn, $sql);
+		
+		$mark9 = 0;
+		$mark11 = 0;
+		$mark13 = 0;
+		$mark15 = 0;
+		
+		echo "<table style=\"margin: 0px auto;\" id=\"paslauga\">";
+		echo "<tr><td>Laisvi laikai</td>";
+		echo "<td>Pasirinkite</td>";
+		echo "</tr>";
+	
+	while($row = $result->fetch_assoc()) {
+	if(($row['busena'] == "PATVIRTINTA") or ($row['busena'] == "UŽDARYTA")){
+		if($row['darbolaikas'] == date('Y-m-d H:i:s', strtotime("$current 09:00"))){$mark9 = 1;}
+		if($row['darbolaikas'] == date('Y-m-d H:i:s', strtotime("$current 11:00"))){$mark11 = 1;}
+		if($row['darbolaikas'] == date('Y-m-d H:i:s', strtotime("$current 13:00"))){$mark13 = 1;}
+		if($row['darbolaikas'] == date('Y-m-d H:i:s', strtotime("$current 15:00"))){$mark15 = 1;}
+		/*echo "<tr><td>".$row['darbolaikas']."</td>";
+		echo "</tr>";*/
+				}
+	}
+		if($mark9 != 1){
+			echo "<tr><td>".date('Y-m-d H:i:s', strtotime("$current 09:00"))."</td>";
+			echo "<td><input type=\"radio\" name=\"vieta\" value=\"".date('Y-m-d H:i:s', strtotime("$current 09:00"))."\" required /></td>";
+			echo "</tr>";
+		}
+		if($mark11 != 1){
+			echo "<tr><td>".date('Y-m-d H:i:s', strtotime("$current 11:00"))."</td>";
+			echo "<td><input type=\"radio\" name=\"vieta\" value=\"".date('Y-m-d H:i:s', strtotime("$current 11:00"))."\" required /></td>";
+			echo "</tr>";
+		}
+		if($mark13 != 1){
+			echo "<tr><td>".date('Y-m-d H:i:s', strtotime("$current 13:00"))."</td>";
+			echo "<td><input type=\"radio\" name=\"vieta\" value=\"".date('Y-m-d H:i:s', strtotime("$current 13:00"))."\" required /></td>";
+			echo "</tr>";
+		}
+		if($mark15 != 1){
+			echo "<tr><td>".date('Y-m-d H:i:s', strtotime("$current 15:00"))."</td>";
+			echo "<td><input type=\"radio\" name=\"vieta\" value=\"".date('Y-m-d H:i:s', strtotime("$current 15:00"))."\" required /></td>";
+			echo "</tr>";
+		}
+	echo "</table>";	
+?>
 		<input name="registruotis" type="submit" class="btn btn-primary display-4"  id="registruotis" value="registruotis">
 	
 		</form>
@@ -162,8 +234,7 @@ if(array_key_exists('registruotis', $_POST)) {
 			</section>
 <section class="gallery1 cid-ssKyy6HHzz" id="gallery1-t">
     <div class="container">
-	<form method='post' class="mbr-form form-with-styler" data-form-title="Form Name">
-		<?php 		
+		<?php 		/*
 		if(array_key_exists('laikai', $_POST)) 
 		{
 			$current = $_POST['diena'];
@@ -172,31 +243,62 @@ if(array_key_exists('registruotis', $_POST)) {
 		{
 			$current = $date;
 		}
+		//$combinedDT = date('Y-m-d H:i:s', strtotime("$current $time"));
 	echo "<div class=\"mbr-section-head\">";
     echo "<h4 class=\"mbr-section-title mbr-fonts-style align-center mb-0 display-2\"><strong>$current Dienos užimti laikai</strong></h4></div>";
 
-	echo "<div align=\"left\"><input min = ".$date." type=\"date\" id=\"diena\" name=\"diena\" required></div><br>";
+	//echo "<div align=\"left\"><input min = ".$date." type=\"date\" id=\"diena\" name=\"diena\" required></div><br>";
 		$sql =  "SELECT * FROM $lentele2 WHERE meistro_id = '$meistro_id' AND 
 									darbolaikas BETWEEN '$current' AND '$current 23:59:59' ORDER BY darbolaikas";
 	
-	$result = mysqli_query($conn, $sql);
-	
-	echo "<table style=\"margin: 0px auto;\" id=\"paslauga\">";
-	
-	echo "<tr><td>Užimtas laikas</td>";
-	echo "</tr>";
+		$result = mysqli_query($conn, $sql);
+		
+		$mark9 = 0;
+		$mark11 = 0;
+		$mark13 = 0;
+		$mark15 = 0;
+		
+		echo "<table style=\"margin: 0px auto;\" id=\"paslauga\">";
+		echo "<tr><td>Užimtas laikas</td>";
+		echo "<td>Pasirinkite</td>";
+		echo "</tr>";
 	
 	while($row = $result->fetch_assoc()) {
 	if(($row['busena'] == "PATVIRTINTA") or ($row['busena'] == "UŽDARYTA")){
-		echo "<tr><td>".$row['darbolaikas']."</td>";
-		echo "</tr>";
-				}
-}
-	echo "</table>";	
-?>
-	<input name="laikai" type="submit" class="btn btn-primary display-4" id="laikai" value="Užimti laikai">
+		if($row['darbolaikas'] == date('Y-m-d H:i:s', strtotime("$current 09:00"))){$mark9 = 1;}
+		if($row['darbolaikas'] == date('Y-m-d H:i:s', strtotime("$current 11:00"))){$mark11 = 1;}
+		if($row['darbolaikas'] == date('Y-m-d H:i:s', strtotime("$current 13:00"))){$mark13 = 1;}
+		if($row['darbolaikas'] == date('Y-m-d H:i:s', strtotime("$current 15:00"))){$mark15 = 1;}
 		
-		</form>
+				}
+	}
+		if($mark9 != 1){
+			echo "<tr><td>".date('Y-m-d H:i:s', strtotime("$current 09:00"))."</td>";
+			echo "<td><input type=\"radio\" name=\"vieta\" value=\"".date('Y-m-d H:i:s', strtotime("$current 09:00"))."\" required /></td>";
+			echo "</tr>";
+		}
+		if($mark11 != 1){
+			echo "<tr><td>".date('Y-m-d H:i:s', strtotime("$current 11:00"))."</td>";
+			echo "<td><input type=\"radio\" name=\"vieta\" value=\"".date('Y-m-d H:i:s', strtotime("$current 11:00"))."\" required /></td>";
+			echo "</tr>";
+		}
+		if($mark13 != 1){
+			echo "<tr><td>".date('Y-m-d H:i:s', strtotime("$current 13:00"))."</td>";
+			echo "<td><input type=\"radio\" name=\"vieta\" value=\"".date('Y-m-d H:i:s', strtotime("$current 13:00"))."\" required /></td>";
+			echo "</tr>";
+		}
+		if($mark15 != 1){
+			echo "<tr><td>".date('Y-m-d H:i:s', strtotime("$current 15:00"))."</td>";
+			echo "<td><input type=\"radio\" name=\"vieta\" value=\"".date('Y-m-d H:i:s', strtotime("$current 15:00"))."\" required /></td>";
+			echo "</tr>";
+		}
+	echo "</table>";	*/
+?>
+		<!--<form method='post' class="mbr-form form-with-styler" data-form-title="Form Name">
+			<?php //echo "<div align=\"left\"><input min = ".$date." type=\"date\" id=\"diena\" name=\"diena\" required></div><br>";?>
+	<input name="laikai" type="submit" class="btn btn-primary display-4" id="laikai" value="Rodyti dieną">
+		
+		</form>-->
 		</div>
 		</section>
 	<section class="features1 cid-ssKyskJGgO mbr-fullscreen" id="features1-e">

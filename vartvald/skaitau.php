@@ -28,11 +28,7 @@
 			<div class="container">
 				<div class="row justify-content-center">            
             <div class="col-12 col-lg"> 
-				<div class="text-wrapper">
-                    <div class="main-heading">
-                        <h2 class="title mbr-section-title mbr-fonts-style display-5"><strong>Meistrų sąrašas</strong></h2>
-                    </div>
-                </div>
+				
 				<div align="left">
 			<a href="index.php">Grįžti į meniu</a>
 				</div>
